@@ -41,23 +41,43 @@ module Guard
         end
         @turn
       end
+      
+      def drb?
+        if @drb.nil?
+          @drb = begin
+            require 'spork-testunit'
+          rescue LoadError => ex
+            false
+          end
+        end
+        @drb
+      end
+      def alt_command?
+        turn? || drb?
+      end
 
     private
 
       def test_unit_command(paths)
         cmd_parts = []
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if rvm?
-        cmd_parts << "bundle exec" if @options[:bundler] && !turn?
-        cmd_parts << "#{turn? ? 'turn' : 'ruby'} -Itest"
-        cmd_parts << "-r bundler/setup" if @options[:bundler] && !turn?
         
-        unless turn?
+        cmd_parts << "bundle exec" if @options[:bundler] && !alt_command?
+        
+        if drb?
+          cmd_parts << "testdrb"
+        else
+          cmd_parts << "#{turn? ? 'turn' : 'ruby'} -Itest"
+        end
+        cmd_parts << "-r bundler/setup" if @options[:bundler] && !alt_command?
+        
+        unless alt_command?
           cmd_parts << "-r #{File.expand_path("../runners/#{@runner_name}_guard_test_runner", __FILE__)}"
           cmd_parts << "-e \"%w[#{paths.join(' ')}].each { |p| load p }\""
         end
 
         paths.each { |path| cmd_parts << "\"./#{path}\"" }
-        cmd_parts << "--runner=guard-#{@runner_name}" unless turn?
+        cmd_parts << "--runner=guard-#{@runner_name}" unless alt_command?
         cmd_parts << @options[:cli]
 
         cmd_parts.compact.join(' ')
