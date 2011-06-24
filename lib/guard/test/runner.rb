@@ -44,14 +44,11 @@ module Guard
       
       def drb?
         if @drb.nil?
-          @drb = begin
-            require 'spork-testunit'
-          rescue LoadError => ex
-            false
-          end
+          @drb = Gem.available?('spork-testunit')
         end
         @drb
       end
+      
       def alt_command?
         turn? || drb?
       end
@@ -65,7 +62,7 @@ module Guard
         cmd_parts << "bundle exec" if @options[:bundler] && !alt_command?
         
         if drb?
-          cmd_parts << "testdrb"
+          cmd_parts << "testdrb test/test_helper.rb"
         else
           cmd_parts << "#{turn? ? 'turn' : 'ruby'} -Itest"
         end
