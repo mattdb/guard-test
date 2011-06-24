@@ -250,7 +250,7 @@ describe Guard::Test::Runner do
 
         it "use the testdrb executable instead of ruby" do
           subject.should_receive(:system).with(
-            "testdrb \"./test/succeeding_test.rb\""
+            "testdrb test/test_helper.rb \"./test/succeeding_test.rb\""
           )
 
           subject.run(["test/succeeding_test.rb"])
