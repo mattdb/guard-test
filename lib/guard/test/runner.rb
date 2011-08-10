@@ -62,7 +62,7 @@ module Guard
         cmd_parts << "bundle exec" if @options[:bundler] && !alt_command?
 
         if drb?
-          cmd_parts << "testdrb test/test_helper.rb"
+          cmd_parts << "testdrb -Itest"
         else
           cmd_parts << "#{turn? ? 'turn' : 'ruby'} -Itest"
         end
