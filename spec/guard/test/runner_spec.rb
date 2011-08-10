@@ -240,7 +240,7 @@ describe Guard::Test::Runner do
           subject.run(["test/succeeding_test.rb"])
         end
       end
-      
+
       context "with spork present" do
         subject do
           runner = described_class.new
@@ -250,7 +250,7 @@ describe Guard::Test::Runner do
 
         it "use the testdrb executable instead of ruby" do
           subject.should_receive(:system).with(
-            "testdrb test/test_helper.rb \"./test/succeeding_test.rb\""
+            "testdrb -Itest \"./test/succeeding_test.rb\""
           )
 
           subject.run(["test/succeeding_test.rb"])
