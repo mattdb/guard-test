@@ -41,14 +41,14 @@ module Guard
         end
         @turn
       end
-      
+
       def drb?
         if @drb.nil?
           @drb = Gem.available?('spork-testunit')
         end
         @drb
       end
-      
+
       def alt_command?
         turn? || drb?
       end
@@ -58,16 +58,16 @@ module Guard
       def test_unit_command(paths)
         cmd_parts = []
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if rvm?
-        
+
         cmd_parts << "bundle exec" if @options[:bundler] && !alt_command?
-        
+
         if drb?
           cmd_parts << "testdrb test/test_helper.rb"
         else
           cmd_parts << "#{turn? ? 'turn' : 'ruby'} -Itest"
         end
         cmd_parts << "-r bundler/setup" if @options[:bundler] && !alt_command?
-        
+
         unless alt_command?
           cmd_parts << "-r #{File.expand_path("../runners/#{@runner_name}_guard_test_runner", __FILE__)}"
           cmd_parts << "-e \"%w[#{paths.join(' ')}].each { |p| load p }\""

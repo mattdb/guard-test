@@ -240,7 +240,7 @@ describe Guard::Test::Runner do
           subject.run(["test/succeeding_test.rb"])
         end
       end
-      
+
       context "with spork present" do
         subject do
           runner = described_class.new
